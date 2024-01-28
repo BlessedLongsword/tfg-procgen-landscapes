@@ -7,6 +7,9 @@ using static TerrainAlgorithms;
 using static TerrainTexturing;
 using static FineTuning;
 using GD.MinMaxSlider;
+using Unity.Mathematics;
+using JetBrains.Annotations;
+using Unity.VisualScripting.Dependencies.Sqlite;
 
 public class LoadChunks : MonoBehaviour
 {
@@ -67,7 +70,11 @@ public class LoadChunks : MonoBehaviour
     Direction playerFacingDirection = Direction.North;
     Tuple<int, int> terrainAtPlayerPosition = new Tuple<int, int>(0, 0);
 
+
     Dictionary<Tuple<int, int>, Chunk> chunks;
+    int maxChunks = 100;
+    int storedChunks = 0;
+    int chunkCounter = 0;
     Dictionary<Tuple<int, int>, int> seeds;
 
     class Chunk
@@ -82,8 +89,10 @@ public class LoadChunks : MonoBehaviour
         public GameObject skyChunk;
         public List<GameObject> plants;
         readonly TerrainGenerator terrainGenerator;
+        public bool created = false;
         public bool active = false;
-        public Chunk(AlgorithmParameters parameters, Algorithm algorithm, int seed, string biome = null)
+        public int number;
+        public Chunk(AlgorithmParameters parameters, Algorithm algorithm, int seed, int number, string biome = null)
         {
             this.biome = biome;
             this.seed = seed;
@@ -100,18 +109,28 @@ public class LoadChunks : MonoBehaviour
         }
         public void UpdateTerrain(int size, int i, int j)
         {
-            terrain = terrainGenerator.GenerateTerrain(terrainData, size, i, j);
+            if (!created)
+                terrain = terrainGenerator.GenerateTerrain(terrainData, size, i, j);
+            else
+                terrain.transform.position = new Vector3(i * size, 0, j * size);
             active = true;
         }
         public void UpdateWaterChunk(int N, float minTerrainHeight, float maxTerrainHeight, float waterLevelPercentage, GameObject water)
         {
             WaterPrefabData waterData = calculateWaterPrefabData(N, minTerrainHeight, maxTerrainHeight, waterLevelPercentage);
             float flatPositionOffset = waterData.flatPosition / 2;
-            waterChunk = Instantiate(water, new Vector3(terrain.transform.position.x + flatPositionOffset,
-                                                        waterData.verticalPosition,
-                                                        terrain.transform.position.z + flatPositionOffset),
-                                                Quaternion.identity);
-            waterChunk.transform.localScale = new Vector3(waterData.flatScale, 1, waterData.flatScale);
+            if (!created)
+            {
+                waterChunk = Instantiate(water, new Vector3(terrain.transform.position.x + flatPositionOffset,
+                                                            waterData.verticalPosition,
+                                                            terrain.transform.position.z + flatPositionOffset),
+                                                    Quaternion.identity);
+                waterChunk.transform.localScale = new Vector3(waterData.flatScale, 1, waterData.flatScale);
+            }
+            else
+                waterChunk.transform.position = new Vector3(terrain.transform.position.x + flatPositionOffset,
+                                                            waterData.verticalPosition,
+                                                            terrain.transform.position.z + flatPositionOffset);
         }
 
         public void UpdateSkyChunk(int N, float maxTerrainHeight, GameObject sky)
@@ -125,8 +144,9 @@ public class LoadChunks : MonoBehaviour
             skyChunk.transform.localScale = new Vector3(skyData.flatScale, skyData.verticalScale, skyData.flatScale);
         }
 
-        public void UpdatePlants(Biome biome, float minTerrainHeight, float waterLevelPercentage)
+        public void UpdatePlants(int N, Biome biome, float minTerrainHeight, float waterLevelPercentage)
         {
+            float size = (float)Math.Pow(2,N) + 1;
             plants = new List<GameObject>();
             for (int i = 0; i < plantMap.GetLength(0); i++)
             {
@@ -136,7 +156,7 @@ public class LoadChunks : MonoBehaviour
                     {
                         int x = (int)terrain.transform.position.x + i;
                         int z = (int)terrain.transform.position.z + j;
-                        float height = terrainData.GetHeight(i, j);
+                        float height = terrainData.GetHeight(i, j) - terrainData.GetSteepness(i / size, j / size) * 0.01f;
                         GameObject plant = RollPlant(biome, height < -minTerrainHeight * waterLevelPercentage);
                         if (plant != null)
                         {
@@ -186,7 +206,8 @@ public class LoadChunks : MonoBehaviour
         biomeIndex = (biomeIndex == -1) ? UnityEngine.Random.Range(0, biomes.Length) : biomeIndex;
         AlgorithmParameters parameters = biomes[biomeIndex].GenerateParameters(N, terrainHeights.x, terrainHeights.y);
 
-        chunks.Add(terrainAtPlayerPosition, new Chunk(parameters, algorithm: algorithm, seed: seeds[terrainAtPlayerPosition], biome: biomes[biomeIndex].name));
+        chunks.Add(terrainAtPlayerPosition, new Chunk(parameters, algorithm: algorithm, seed: seeds[terrainAtPlayerPosition], chunkCounter++, biome: biomes[biomeIndex].name));
+        storedChunks++;
         chunks[terrainAtPlayerPosition].UpdateTerrainData(terrainHeights.x, terrainHeights.y, N, biomes[biomeIndex]);
         chunks[terrainAtPlayerPosition].UpdateTerrain((int)Math.Pow(2, N) + 1, terrainAtPlayerPosition.Item1, terrainAtPlayerPosition.Item2);
         if (generateWater)
@@ -204,7 +225,7 @@ public class LoadChunks : MonoBehaviour
                 break;
         }
         if (biomes[biomeIndex].plants.Length > 0)
-            chunks[terrainAtPlayerPosition].UpdatePlants(biomes[biomeIndex], terrainHeights.x, waterLevelPercentage);
+            chunks[terrainAtPlayerPosition].UpdatePlants(N, biomes[biomeIndex], terrainHeights.x, waterLevelPercentage);
     }
 
     // Update is called once per frame
@@ -251,9 +272,24 @@ public class LoadChunks : MonoBehaviour
         Tuple<int, int> key = new Tuple<int, int>(x, z);
         if (chunks.ContainsKey(key))
         {
-            Destroy(chunks[key].terrain.gameObject);
-            if (generateWater)
-                Destroy(chunks[key].waterChunk);
+            if (storedChunks > maxChunks)
+            {
+                Destroy(chunks[key].terrain.gameObject);
+                chunks[key].created = false;
+                if (generateWater)
+                    Destroy(chunks[key].waterChunk);
+            } else {
+                int size = (int)Math.Pow(2, N) + 1;
+                chunks[key].terrain.transform.position = new Vector3(x * size, -1000, z * size);
+                if (generateWater)
+                {
+                    WaterPrefabData waterData = calculateWaterPrefabData(N, terrainHeights.x, terrainHeights.y, waterLevelPercentage);
+                    float flatPositionOffset = waterData.flatPosition / 2;
+                    chunks[key].waterChunk.transform.position = new Vector3(chunks[key].terrain.transform.position.x + flatPositionOffset,
+                                                                    waterData.verticalPosition - 1000,
+                                                                    chunks[key].terrain.transform.position.z + flatPositionOffset);
+                }
+            }
             if (skyMode == SkyMode.ChunkClouds)
                 Destroy(chunks[key].skyChunk);
             if (chunks[key].plants != null)
@@ -285,7 +321,8 @@ public class LoadChunks : MonoBehaviour
                 }
                 if (!seeds.ContainsKey(chunk))
                     seeds.Add(chunk, UnityEngine.Random.Range(0, int.MaxValue));
-                chunks.Add(chunk, new Chunk(parameters, algorithm, seeds[chunk], biomes[biomeIndex].name));
+                chunks.Add(chunk, new Chunk(parameters, algorithm, seeds[chunk], chunkCounter++, biomes[biomeIndex].name));
+                storedChunks++;
                 chunks[chunk].UpdateTerrainData(terrainHeights.x, terrainHeights.y, N, biomes[biomeIndex]);
             }
             if (!chunks[chunk].active)
@@ -297,11 +334,12 @@ public class LoadChunks : MonoBehaviour
                     chunks[chunk].UpdateSkyChunk(N, terrainHeights.y, sky);
                 int biomeIndex = GetBiomeIndex(chunks[chunk].biome);
                 if (biomes[biomeIndex].plants.Length > 0)
-                    chunks[chunk].UpdatePlants(biomes[biomeIndex], terrainHeights.x, waterLevelPercentage);
+                    chunks[chunk].UpdatePlants(N, biomes[biomeIndex], terrainHeights.x, waterLevelPercentage);
+                chunks[chunk].created = true;
             }
         }
 
-        foreach (Tuple<int, int> chunk in chunks.Keys.ToList().Where(x => chunks[x].active && !activeChunks.Contains(x)))
+        foreach (Tuple<int, int> chunk in chunks.Keys.ToList().Where(x => chunks[x].active && !activeChunks.Contains(x)).OrderBy(x => chunks[x].number))
             DestroyChunk(chunk.Item1, chunk.Item2);
     }
 

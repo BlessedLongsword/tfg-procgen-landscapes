@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657832, g: 0.49641222, b: 0.57481664, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -323,8 +323,8 @@ MonoBehaviour:
     maxRandomRange: {x: 0, y: 1}
   startingBiome: Mountain
   generateWater: 1
-  waterLevelPercentage: 1
-  water: {fileID: 1253252997495286165, guid: 28ab203a6204400b853fcf56294ef10b, type: 3}
+  waterLevelPercentage: 0.771
+  water: {fileID: 1253252997495286165, guid: decad15af2a474143a8666a6890b1348, type: 3}
   skyMode: 1
   skybox: {fileID: 1000010237739742, guid: fe69c79d384eb4f4f944d4ec253d357a, type: 3}
   sky: {fileID: 9101220713985428475, guid: 5fb1ee63e27c8a748b2e2001e288c8a1, type: 3}
