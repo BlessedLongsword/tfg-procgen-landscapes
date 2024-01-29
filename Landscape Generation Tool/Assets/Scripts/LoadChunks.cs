@@ -169,17 +169,14 @@ public class LoadChunks : MonoBehaviour
 
         private GameObject RollPlant(Biome biome, bool isBelowWater)
         {
-            Tuple<GameObject, float>[] plants = new Tuple<GameObject, float>[biome.plants.Where(x => x.aquatic == isBelowWater).Count()];
+            Tuple<GameObject, float>[] plants = new Tuple<GameObject, float>[biome.plants.Count()];
             if (plants.Length == 0)
                 return null;
             float totalProbability = 0;
             for (int i = 0; i < biome.plants.Length; i++)
             {
-                if (biome.plants[i].aquatic == isBelowWater)
-                {
-                    plants[i] = new Tuple<GameObject, float>(biome.plants[i].plant, biome.plants[i].spawnProbability);
-                    totalProbability += biome.plants[i].spawnProbability;
-                }
+                plants[i] = new Tuple<GameObject, float>(biome.plants[i].plant, (biome.plants[i].aquatic == isBelowWater) ? biome.plants[i].spawnProbability : 0);
+                totalProbability += (biome.plants[i].aquatic == isBelowWater) ? biome.plants[i].spawnProbability : 0;
             }
             float roll = UnityEngine.Random.Range(0.0f, totalProbability);
             float currentProbability = 0;

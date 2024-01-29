@@ -167,11 +167,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c416be2e839c2a98e9ed8439f6ddb021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 0
+  seed: 1
   N: 6
-  terrainHeights: {x: -20, y: 100}
+  terrainHeights: {x: -20, y: 50}
   algorithm: 0
-  chanceNeighbour: 0.05
+  chanceNeighbour: 0
   biomes:
   - name: Plain
     terrainLayerNames:
@@ -260,7 +260,7 @@ MonoBehaviour:
       spawnProbability: 1
       aquatic: 0
     - plant: {fileID: 7357422581382946556, guid: 4741400472e6c18499620f6779ecab12, type: 3}
-      spawnProbability: 0
+      spawnProbability: 1
       aquatic: 0
     - plant: {fileID: 8491234662667337095, guid: 6492c94bc0b672641be265bb175c7070, type: 3}
       spawnProbability: 1
@@ -274,10 +274,19 @@ MonoBehaviour:
     - plant: {fileID: 9217782850148608433, guid: e08b40f9daef20948b7a5fb55f2966b6, type: 3}
       spawnProbability: 1
       aquatic: 0
-    density: 0.051
-    isolationRadius: 4.18
+    - plant: {fileID: 7781666558144943531, guid: 732f7239441721c46baf5302a30fde43, type: 3}
+      spawnProbability: 0.5
+      aquatic: 0
+    - plant: {fileID: 7271523272992833555, guid: ca555c1402963ad499b39abbc0fde4d2, type: 3}
+      spawnProbability: 0.5
+      aquatic: 0
+    - plant: {fileID: 5110047723870728626, guid: 893a0fc591e16fd4fa775642a5852ed0, type: 3}
+      spawnProbability: 0.25
+      aquatic: 0
+    density: 0.015
+    isolationRadius: 5
     maxSteepness: 26
-    maxHeight: 80.2
+    maxHeight: 50
     initialAltitudes: {x: 0, y: 1.9354341}
     amplitude: {x: 1, y: 2}
     roughness: {x: 0.2, y: 0.4}
@@ -317,13 +326,207 @@ MonoBehaviour:
     maxSteepness: 100
     maxHeight: 39.4
     initialAltitudes: {x: 0, y: 0.1}
-    amplitude: {x: 0.1, y: 0.5}
+    amplitude: {x: 0.1, y: 0.39735067}
     roughness: {x: 0.05, y: 0.2}
-    minRandomRange: {x: -1, y: 0}
-    maxRandomRange: {x: 0, y: 1}
-  startingBiome: Mountain
+    minRandomRange: {x: -1, y: -1}
+    maxRandomRange: {x: 0, y: 0.19640243}
+  - name: Desert
+    terrainLayerNames:
+    - Coast
+    splatHeights:
+    - textureIndex: 0
+      startingHeightPercentage: 0
+      nextHeightIndex: 0
+      overlap: 0
+      useSteepness: 0
+      steepnessThreshold: {x: 0, y: 0.1}
+    plants: []
+    density: 0
+    isolationRadius: 0
+    maxSteepness: 0
+    maxHeight: 0
+    initialAltitudes: {x: 0, y: 0.5}
+    amplitude: {x: 0, y: 0.5}
+    roughness: {x: 0.05, y: 0.2}
+    minRandomRange: {x: -1, y: -1}
+    maxRandomRange: {x: 1, y: 1}
+  - name: Forest
+    terrainLayerNames:
+    - Forest
+    - Rock
+    - Snow
+    splatHeights:
+    - textureIndex: 0
+      startingHeightPercentage: 0
+      nextHeightIndex: 2
+      overlap: 0
+      useSteepness: 1
+      steepnessThreshold: {x: 0, y: 30}
+    - textureIndex: 1
+      startingHeightPercentage: 0
+      nextHeightIndex: 2
+      overlap: 0
+      useSteepness: 1
+      steepnessThreshold: {x: 30, y: 100}
+    - textureIndex: 1
+      startingHeightPercentage: 1
+      nextHeightIndex: 2
+      overlap: 0
+      useSteepness: 0
+      steepnessThreshold: {x: 0, y: 0}
+    plants:
+    - plant: {fileID: 9085537086053278538, guid: dde4ad11e7d16e944bbd6c4d7174a4fc, type: 3}
+      spawnProbability: 1
+      aquatic: 0
+    - plant: {fileID: 4563090175455807802, guid: ba201be0cb4aade40883b5f673e192af, type: 3}
+      spawnProbability: 1
+      aquatic: 0
+    - plant: {fileID: 9217782850148608433, guid: e08b40f9daef20948b7a5fb55f2966b6, type: 3}
+      spawnProbability: 1
+      aquatic: 0
+    density: 0.076
+    isolationRadius: 0
+    maxSteepness: 30
+    maxHeight: 100
+    initialAltitudes: {x: 0, y: 0.19737034}
+    amplitude: {x: 0, y: 0.19737034}
+    roughness: {x: 0.05, y: 0.29863113}
+    minRandomRange: {x: -1, y: -1}
+    maxRandomRange: {x: 1, y: 1}
+  - name: Tundra
+    terrainLayerNames:
+    - Snow
+    - Rock
+    - Snow
+    splatHeights:
+    - textureIndex: 0
+      startingHeightPercentage: 0
+      nextHeightIndex: 2
+      overlap: 0
+      useSteepness: 1
+      steepnessThreshold: {x: 0, y: 24}
+    - textureIndex: 1
+      startingHeightPercentage: 0
+      nextHeightIndex: 2
+      overlap: 0
+      useSteepness: 1
+      steepnessThreshold: {x: 24, y: 100}
+    - textureIndex: 2
+      startingHeightPercentage: 1
+      nextHeightIndex: 2
+      overlap: 0
+      useSteepness: 0
+      steepnessThreshold: {x: 0, y: 0}
+    plants:
+    - plant: {fileID: 9085537086053278538, guid: dde4ad11e7d16e944bbd6c4d7174a4fc, type: 3}
+      spawnProbability: 1
+      aquatic: 0
+    - plant: {fileID: 4563090175455807802, guid: ba201be0cb4aade40883b5f673e192af, type: 3}
+      spawnProbability: 1
+      aquatic: 0
+    - plant: {fileID: 9217782850148608433, guid: e08b40f9daef20948b7a5fb55f2966b6, type: 3}
+      spawnProbability: 1
+      aquatic: 0
+    density: 0.02
+    isolationRadius: 1
+    maxSteepness: 30
+    maxHeight: 100
+    initialAltitudes: {x: 0, y: 0.2}
+    amplitude: {x: 0, y: 0.2}
+    roughness: {x: 0, y: 0.35}
+    minRandomRange: {x: -1, y: -1}
+    maxRandomRange: {x: 1, y: 1}
+  - name: Snow Hills
+    terrainLayerNames:
+    - Snow
+    splatHeights:
+    - textureIndex: 0
+      startingHeightPercentage: 0
+      nextHeightIndex: 0
+      overlap: 0
+      useSteepness: 0
+      steepnessThreshold: {x: 0, y: 0}
+    plants: []
+    density: 0.02
+    isolationRadius: 1
+    maxSteepness: 30
+    maxHeight: 100
+    initialAltitudes: {x: 0, y: 1}
+    amplitude: {x: 0, y: 1}
+    roughness: {x: 0, y: 0.35}
+    minRandomRange: {x: -1, y: -1}
+    maxRandomRange: {x: 1, y: 1}
+  - name: Coastline
+    terrainLayerNames:
+    - Coast
+    - Ground
+    - Rock
+    - Ground
+    splatHeights:
+    - textureIndex: 0
+      startingHeightPercentage: 0
+      nextHeightIndex: 1
+      overlap: 0.0451
+      useSteepness: 0
+      steepnessThreshold: {x: 0, y: 0}
+    - textureIndex: 1
+      startingHeightPercentage: 0.25
+      nextHeightIndex: 3
+      overlap: 0
+      useSteepness: 1
+      steepnessThreshold: {x: 0, y: 35}
+    - textureIndex: 2
+      startingHeightPercentage: 0.25
+      nextHeightIndex: 3
+      overlap: 0
+      useSteepness: 1
+      steepnessThreshold: {x: 35, y: 100}
+    - textureIndex: 3
+      startingHeightPercentage: 1
+      nextHeightIndex: 0
+      overlap: 0
+      useSteepness: 0
+      steepnessThreshold: {x: 0, y: 0}
+    plants:
+    - plant: {fileID: 1477691211899714, guid: bee6368b78f678542bfcecbcc7280a48, type: 3}
+      spawnProbability: 1
+      aquatic: 1
+    - plant: {fileID: 7781666558144943531, guid: 732f7239441721c46baf5302a30fde43, type: 3}
+      spawnProbability: 0.5
+      aquatic: 0
+    - plant: {fileID: 7271523272992833555, guid: ca555c1402963ad499b39abbc0fde4d2, type: 3}
+      spawnProbability: 0.5
+      aquatic: 0
+    - plant: {fileID: 5110047723870728626, guid: 893a0fc591e16fd4fa775642a5852ed0, type: 3}
+      spawnProbability: 1
+      aquatic: 0
+    - plant: {fileID: 1197638070049770, guid: 7e5e9076460bc114caddbbf89e9fec4c, type: 3}
+      spawnProbability: 1
+      aquatic: 1
+    - plant: {fileID: 1235844006893468, guid: 4b1deebc44f447b449a2ab524f21462f, type: 3}
+      spawnProbability: 1
+      aquatic: 1
+    - plant: {fileID: 1453833830047468, guid: d9f7e8124b769f147bc50cf3f42d673a, type: 3}
+      spawnProbability: 1
+      aquatic: 1
+    - plant: {fileID: 1883091435182124, guid: a59382a2dd493084a9622daed74a5229, type: 3}
+      spawnProbability: 1
+      aquatic: 1
+    - plant: {fileID: 1518448672751224, guid: 9220d3a6a55faf648b36a6da6e1974fd, type: 3}
+      spawnProbability: 1
+      aquatic: 1
+    density: 0.02
+    isolationRadius: 1
+    maxSteepness: 35
+    maxHeight: 100
+    initialAltitudes: {x: 0, y: 1}
+    amplitude: {x: 0, y: 1}
+    roughness: {x: 0, y: 0.35}
+    minRandomRange: {x: -1, y: -1}
+    maxRandomRange: {x: 1, y: 1}
+  startingBiome: Coastline
   generateWater: 1
-  waterLevelPercentage: 0.771
+  waterLevelPercentage: 0.65
   water: {fileID: 1253252997495286165, guid: decad15af2a474143a8666a6890b1348, type: 3}
   skyMode: 1
   skybox: {fileID: 1000010237739742, guid: fe69c79d384eb4f4f944d4ec253d357a, type: 3}
